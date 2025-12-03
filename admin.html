@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin • Diagnostics</title>
+  <style>
+	:root { color-scheme: dark; }
+	* { box-sizing: border-box; }
+	body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:#0b0b0b; color:#eaeaea; padding:18px; }
+	.wrap { max-width: 1280px; margin: 0 auto; }
+
+	.row { display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+	.toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+	.card { background:#111; border:1px solid #2a2a2a; border-radius:16px; padding:16px; margin:12px 0; box-shadow: 0 16px 45px rgba(0,0,0,.45); }
+	.muted { color:#a9a9a9; font-size:13px; }
+	.mono { font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace; }
+
+	input, select {
+	  padding:10px 12px; border-radius:12px; border:1px solid #2a2a2a;
+	  background:#0e0e0e; color:#fff; width: 240px;
+	}
+
+	.btn { padding:10px 12px; border-radius:12px; border:1px solid #2a2a2a; background:#111; color:#fff; cursor:pointer; font-weight:900; text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
+	.btn.primary { background:#3b82f6; border:0; }
+	.btn.danger { background:#ef4444; border:0; }
+	.btn:disabled { opacity:.55; cursor:not-allowed; }
+	.pill { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; border:1px solid #2a2a2a; background:#0e0e0e; font-size:12px; color:#d7d7d7; }
+
+	.grid { display:grid; grid-template-columns: 1fr; gap:12px; }
+	@media (min-width: 980px) { .grid { grid-template-columns: 1.55fr .45fr; } }
+
+	table { width:100%; border-collapse:separate; border-spacing:0; border:1px solid #2a2a2a; border-radius:14px; overflow:hidden; }
+	thead th { text-align:left; padding:10px; background:#101010; position:sticky; top:0; z-index:1; font-size:12.5px; color:#cfcfcf; border-bottom:1px solid #222; cursor:pointer; user-select:none; }
+	tbody td { padding:10px; border-bottom:1px solid #1f1f1f; font-size:13px; color:#eaeaea; vertical-align:top; }
+	tbody tr:hover td { background:#0f0f0f; }
+	tbody tr:last-child td { border-bottom:0; }
+	.nowrap { white-space:nowrap; }
+	.small { font-size:12px; color:#cfcfcf; }
+
+	.iconbtn{
+	  display:inline-flex; align-items:center; justify-content:center;
+	  width:30px; height:30px; border-radius:10px;
+	  border:1px solid #2a2a2a; background:#0e0e0e;
+	  cursor:pointer; color:#eaeaea;
+	}
+	.iconbtn:hover { border-color:#3b82f6; }
+
+	.kv { display:grid; grid-template-columns: 120px 1fr; gap:8px 10px; align-items:start; }
+	.k { color:#a9a9a9; font-size:12px; }
+	.v { color:#eaeaea; font-size:13px; word-break:break-word; }
+	.links { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+	.linkpill { display:inline-flex; gap:8px; align-items:center; padding:7px 10px; border-radius:999px; border:1px solid #2a2a2a; background:#0e0e0e; color:#eaeaea; font-size:12px; text-decoration:none; }
+	.linkpill:hover { border-color:#3b82f6; }
+
+	.toast{
+	  position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+	  background:#101010; border:1px solid #2a2a2a; color:#eaeaea;
+	  padding:10px 12px; border-radius:999px; font-size:13px;
+	  opacity:0; pointer-events:none; transition:opacity .18s ease;
+	  box-shadow: 0 16px 40px rgba(0,0,0,.45);
+	}
+	.toast.show { opacity:1; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+	<div class="row">
+	  <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+		<h1 style="margin:0;">Admin • Diagnostics</h1>
+		<span class="pill" id="lockPill">🔒 Locked</span>
+	  </div>
+	  <a class="btn" href="/">⬅ Back</a>
+	</div>
+
+	<div class="card">
+	  <div class="row">
+		<div>
+		  <div style="font-weight:950;">Unlock</div>
+		  <div class="muted">Uses <code>ADMIN_PIN</code> from environment (default <span class="mono">HAHA L BOZO</span>).</div>
+		</div>
+		<div class="toolbar">
+		  <input id="pin" type="password" placeholder="Admin PIN" autocomplete="current-password" />
+		  <button id="unlock" class="btn primary">Unlock</button>
+		  <button id="refresh" class="btn" disabled>Refresh</button>
+		  <button id="exportCsv" class="btn" disabled>Export CSV</button>
+		  <button id="clearDb" class="btn danger" disabled>Clear DB</button>
+		</div>
+	  </div>
+
+	  <div class="row" style="margin-top:12px;">
+		<div class="toolbar">
+		  <input id="search" type="text" placeholder="Search (ip, city, isp, ua...)" disabled />
+		  <select id="limit" disabled>
+			<option value="100" selected>Show 100</option>
+			<option value="200">Show 200</option>
+			<option value="500">Show 500</option>
+		  </select>
+		</div>
+		<div class="muted" id="status">Locked.</div>
+	  </div>
+	</div>
+
+	<div class="grid" id="dataArea" style="display:none;">
+	  <div class="card">
+		<div class="row">
+		  <div style="font-weight:950;">Submissions</div>
+		  <div class="muted" id="countText">0</div>
+		</div>
+
+		<div style="margin-top:10px; overflow:auto; max-height:72vh; border-radius:14px;">
+		  <table>
+			<thead>
+			  <tr>
+				<th data-k="id" class="nowrap">ID</th>
+				<th data-k="created_at" class="nowrap">Created (UTC)</th>
+				<th data-k="public_ipv4">IPv4</th>
+				<th data-k="public_ipv6">IPv6</th>
+				<th data-k="location">Location</th>
+				<th data-k="flags">Flags</th>
+				<th data-k="isp">Network</th>
+			  </tr>
+			</thead>
+			<tbody id="tbody"></tbody>
+		  </table>
+		</div>
+	  </div>
+
+	  <div class="card">
+		<div class="row">
+		  <div style="font-weight:950;">Details</div>
+		  <div class="muted">Click a row</div>
+		</div>
+		<div id="details" style="margin-top:12px;">
+		  <div class="muted">No row selected.</div>
+		</div>
+	  </div>
+	</div>
+  </div>
+
+  <div class="toast" id="toast">Copied</div>
+
+  <script>
+	const pinInput = document.getElementById("pin");
+	const unlockBtn = document.getElementById("unlock");
+	const refreshBtn = document.getElementById("refresh");
+	const exportBtn = document.getElementById("exportCsv");
+	const clearBtn = document.getElementById("clearDb");
+	const statusEl = document.getElementById("status");
+	const lockPill = document.getElementById("lockPill");
+
+	const dataArea = document.getElementById("dataArea");
+	const tbody = document.getElementById("tbody");
+	const details = document.getElementById("details");
+	const countText = document.getElementById("countText");
+
+	const searchInput = document.getElementById("search");
+	const limitSelect = document.getElementById("limit");
+	const toast = document.getElementById("toast");
+
+	let pin = "";
+	let allRows = [];
+	let selectedId = null;
+
+	let sortKey = "id";
+	let sortDir = "desc"; // asc/desc
+
+	function showToast(msg) {
+	  toast.textContent = msg;
+	  toast.classList.add("show");
+	  clearTimeout(showToast._t);
+	  showToast._t = setTimeout(() => toast.classList.remove("show"), 900);
+	}
+
+	async function copyText(text) {
+	  if (!text) return showToast("Nothing to copy");
+	  try {
+		await navigator.clipboard.writeText(text);
+		showToast("✅ Copied");
+	  } catch {
+		showToast("❌ Copy failed");
+	  }
+	}
+
+	function esc(s) {
+	  return String(s ?? "").replace(/[&<>"']/g, m => ({
+		"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+	  }[m]));
+	}
+
+	function fmtUTC(iso) {
+	  try {
+		const d = new Date(iso);
+		if (isNaN(d.getTime())) return String(iso || "");
+		return d.toISOString().replace("T"," ").replace("Z","Z");
+	  } catch { return String(iso || ""); }
+	}
+
+	function flagsText(r){
+	  const f = [];
+	  if (Number(r.is_vpn) === 1) f.push("VPN");
+	  if (Number(r.is_proxy) === 1) f.push("Proxy");
+	  if (Number(r.is_tor) === 1) f.push("Tor");
+	  return f.length ? f.join(" / ") : "—";
+	}
+
+	function bestCoords(r){
+	  const gla = (r.gps_lat !== null && r.gps_lat !== undefined && r.gps_lat !== "") ? Number(r.gps_lat) : null;
+	  const glo = (r.gps_lon !== null && r.gps_lon !== undefined && r.gps_lon !== "") ? Number(r.gps_lon) : null;
+	  if (Number.isFinite(gla) && Number.isFinite(glo)) return { lat:gla, lon:glo, kind:"GPS" };
+
+	  const ila = (r.ip_lat !== null && r.ip_lat !== undefined && r.ip_lat !== "") ? Number(r.ip_lat) : null;
+	  const ilo = (r.ip_lon !== null && r.ip_lon !== undefined && r.ip_lon !== "") ? Number(r.ip_lon) : null;
+	  if (Number.isFinite(ila) && Number.isFinite(ilo)) return { lat:ila, lon:ilo, kind:"IP" };
+
+	  return null;
+	}
+
+	function mapLinks(coords){
+	  if (!coords) return "";
+	  const osm = `https://www.openstreetmap.org/?mlat=${encodeURIComponent(coords.lat)}&mlon=${encodeURIComponent(coords.lon)}#map=16/${encodeURIComponent(coords.lat)}/${encodeURIComponent(coords.lon)}`;
+	  const gmaps = `https://www.google.com/maps?q=${encodeURIComponent(coords.lat)},${encodeURIComponent(coords.lon)}`;
+	  return `
+		<div class="links">
+		  <a class="linkpill" href="${osm}" target="_blank" rel="noreferrer">🗺️ OpenStreetMap</a>
+		  <a class="linkpill" href="${gmaps}" target="_blank" rel="noreferrer">📍 Google Maps</a>
+		</div>
+	  `;
+	}
+
+	function setLockedUI(locked) {
+	  if (locked) {
+		lockPill.textContent = "🔒 Locked";
+		dataArea.style.display = "none";
+		refreshBtn.disabled = true;
+		exportBtn.disabled = true;
+		clearBtn.disabled = true;
+		searchInput.disabled = true;
+		limitSelect.disabled = true;
+	  } else {
+		lockPill.textContent = "🔓 Unlocked";
+		dataArea.style.display = "";
+		refreshBtn.disabled = false;
+		exportBtn.disabled = false;
+		clearBtn.disabled = false;
+		searchInput.disabled = false;
+		limitSelect.disabled = false;
+	  }
+	}
+
+	function renderDetails(r) {
+	  if (!r) {
+		details.innerHTML = `<div class="muted">No row selected.</div>`;
+		return;
+	  }
+
+	  const loc = [r.city, r.region, r.postal, r.country].filter(Boolean).join(", ") || "—";
+	  const coords = bestCoords(r);
+	  const coordStr = coords ? `${coords.kind}: ${coords.lat.toFixed(6)}, ${coords.lon.toFixed(6)}` : "—";
+	  const acc = (r.gps_accuracy_m !== null && r.gps_accuracy_m !== undefined && r.gps_accuracy_m !== "")
+		? `${Math.round(Number(r.gps_accuracy_m))}m` : "—";
+
+	  details.innerHTML = `
+		<div class="kv">
+		  <div class="k">ID</div><div class="v mono">${esc(r.id)}</div>
+		  <div class="k">Created</div><div class="v mono">${esc(fmtUTC(r.created_at))}</div>
+		  <div class="k">Consent</div><div class="v">${Number(r.consent)===1 ? "Yes" : "No"} (${esc(r.consent_version || "")})</div>
+
+		  <div class="k">IPv4</div>
+		  <div class="v">
+			<span class="mono">${esc(r.public_ipv4 || "—")}</span>
+			<button class="iconbtn" data-copy="${esc(r.public_ipv4 || "")}" title="Copy IPv4">📋</button>
+		  </div>
+
+		  <div class="k">IPv6</div>
+		  <div class="v">
+			<span class="mono">${esc(r.public_ipv6 || "—")}</span>
+			<button class="iconbtn" data-copy="${esc(r.public_ipv6 || "")}" title="Copy IPv6">📋</button>
+		  </div>
+
+		  <div class="k">Best IP</div><div class="v mono">${esc(r.public_ip || "—")}</div>
+		  <div class="k">Location</div><div class="v">${esc(loc)}</div>
+		  <div class="k">Flags</div><div class="v">${esc(flagsText(r))}</div>
+		  <div class="k">Network</div><div class="v">${esc([r.isp, r.org, r.asn].filter(Boolean).join(" • ") || "—")}</div>
+		  <div class="k">Coords</div><div class="v mono">${esc(coordStr)} <span class="small">${coords && coords.kind==="GPS" ? `(accuracy ${esc(acc)})` : ""}</span></div>
+
+		  <div class="k">Device</div><div class="v">${esc(r.device_name || "—")}</div>
+		  <div class="k">Platform</div><div class="v mono">${esc(r.platform || "—")}</div>
+		  <div class="k">Lang/TZ</div><div class="v mono">${esc((r.language||"—") + " • " + (r.timezone||"—"))}</div>
+		  <div class="k">Screen</div><div class="v mono">${esc((r.screen||"—") + " / " + (r.viewport||"—"))}</div>
+		  <div class="k">DPR/Touch</div><div class="v mono">${esc(String(r.device_pixel_ratio ?? "—"))} • ${esc(String(r.touch_points ?? "—"))}</div>
+
+		  <div class="k">Page</div><div class="v">${esc(r.page_url || "—")}</div>
+		  <div class="k">Referrer</div><div class="v">${esc(r.referrer || "—")}</div>
+
+		  <div class="k">User-Agent</div><div class="v mono">${esc(r.user_agent || "—")}</div>
+		</div>
+
+		${mapLinks(coords)}
+	  `;
+
+	  details.querySelectorAll("[data-copy]").forEach(btn => {
+		btn.addEventListener("click", (e) => {
+		  e.preventDefault(); e.stopPropagation();
+		  const t = btn.getAttribute("data-copy") || "";
+		  if (t) copyText(t);
+		});
+	  });
+	}
+
+	function rowSearchText(r) {
+	  const loc = [r.city, r.region, r.postal, r.country].filter(Boolean).join(" ");
+	  const net = [r.isp, r.org, r.asn].filter(Boolean).join(" ");
+	  return [
+		r.id, r.created_at, r.public_ip, r.public_ipv4, r.public_ipv6,
+		loc, net, flagsText(r),
+		r.device_name, r.platform, r.language, r.timezone,
+		r.screen, r.viewport, r.user_agent
+	  ].map(x => String(x ?? "")).join(" ").toLowerCase();
+	}
+
+	function computeDerived(r){
+	  return {
+		...r,
+		location: [r.city, r.region, r.country].filter(Boolean).join(", "),
+		flags: flagsText(r),
+	  };
+	}
+
+	function sortRows(rows){
+	  const dir = sortDir === "asc" ? 1 : -1;
+	  return rows.slice().sort((a,b)=>{
+		const aa = computeDerived(a);
+		const bb = computeDerived(b);
+		let va = aa[sortKey];
+		let vb = bb[sortKey];
+
+		// handle derived keys
+		if (sortKey === "location") { va = aa.location; vb = bb.location; }
+		if (sortKey === "flags") { va = aa.flags; vb = bb.flags; }
+
+		// numeric
+		if (sortKey === "id") { return (Number(va) - Number(vb)) * dir; }
+
+		va = String(va ?? "").toLowerCase();
+		vb = String(vb ?? "").toLowerCase();
+		if (va < vb) return -1 * dir;
+		if (va > vb) return 1 * dir;
+		return 0;
+	  });
+	}
+
+	function renderTable(rows) {
+	  const limit = Number(limitSelect.value || 200);
+	  const q = (searchInput.value || "").trim().toLowerCase();
+
+	  const filtered = !q ? rows : rows.filter(r => rowSearchText(r).includes(q));
+	  const sorted = sortRows(filtered);
+	  const shown = sorted.slice(0, limit);
+
+	  countText.textContent = `${filtered.length} match(es) • showing ${shown.length} of ${rows.length}`;
+
+	  tbody.innerHTML = shown.map(r => {
+		const loc = [r.city, r.region, r.country].filter(Boolean).join(", ") || "—";
+		const net = [r.isp || r.org, r.asn].filter(Boolean).join(" • ") || "—";
+		const active = (Number(r.id) === Number(selectedId));
+		return `
+		  <tr data-id="${esc(r.id)}" style="${active ? "outline:2px solid #3b82f6; outline-offset:-2px;" : ""}">
+			<td class="mono nowrap">${esc(r.id)}</td>
+			<td class="mono nowrap">${esc(fmtUTC(r.created_at))}</td>
+			<td>
+			  <span class="mono">${esc(r.public_ipv4 || "—")}</span>
+			  <button class="iconbtn" data-copy="${esc(r.public_ipv4 || "")}" title="Copy IPv4">📋</button>
+			</td>
+			<td style="max-width:220px;">
+			  <span class="mono">${esc(r.public_ipv6 || "—")}</span>
+			  <button class="iconbtn" data-copy="${esc(r.public_ipv6 || "")}" title="Copy IPv6">📋</button>
+			</td>
+			<td>${esc(loc)}</td>
+			<td>${esc(flagsText(r))}</td>
+			<td style="max-width:300px;">${esc(net)}</td>
+		  </tr>
+		`;
+	  }).join("");
+
+	  // Row click
+	  [...tbody.querySelectorAll("tr")].forEach(tr => {
+		tr.addEventListener("click", () => {
+		  selectedId = Number(tr.getAttribute("data-id"));
+		  const r = allRows.find(x => Number(x.id) === selectedId);
+		  renderDetails(r);
+		  renderTable(allRows);
+		});
+	  });
+
+	  // Copy buttons stop row click
+	  tbody.querySelectorAll("[data-copy]").forEach(btn => {
+		btn.addEventListener("click", (e) => {
+		  e.preventDefault();
+		  e.stopPropagation();
+		  const t = btn.getAttribute("data-copy") || "";
+		  if (t) copyText(t);
+		});
+	  });
+
+	  if (shown.length === 0) {
+		tbody.innerHTML = `<tr><td colspan="7" class="muted" style="padding:16px;">No results.</td></tr>`;
+		renderDetails(null);
+	  }
+	}
+
+	async function loadStats(){
+	  try{
+		const res = await fetch("/api/admin/stats", { headers: { "x-admin-pin": pin }});
+		const json = await res.json();
+		if (!json.ok) return;
+		const top = (json.top_country || []).map(x => `${x.country}: ${x.c}`).join(" • ") || "—";
+		const f = json.flagged || {};
+		statusEl.textContent = `✅ Total: ${json.total} • Last: ${json.last || "—"} • Flags(VPN/Proxy/Tor): ${f.vpn||0}/${f.proxy||0}/${f.tor||0} • Top: ${top}`;
+	  } catch {}
+	}
+
+	async function loadData() {
+	  statusEl.textContent = "Loading data...";
+	  try {
+		const limit = Number(limitSelect.value || 200);
+		const res = await fetch("/api/admin/data?limit=" + encodeURIComponent(limit), { headers: { "x-admin-pin": pin } });
+		const json = await res.json();
+
+		if (!json.ok) {
+		  statusEl.textContent = "❌ " + (json.error || "Unauthorized");
+		  setLockedUI(true);
+		  return;
+		}
+
+		allRows = Array.isArray(json.rows) ? json.rows : [];
+		selectedId = null;
+
+		setLockedUI(false);
+		await loadStats();
+		renderTable(allRows);
+		renderDetails(null);
+	  } catch (e) {
+		statusEl.textContent = "❌ Load failed: " + (e?.message || String(e));
+		setLockedUI(true);
+	  }
+	}
+
+	unlockBtn.onclick = async () => {
+	  pin = pinInput.value.trim();
+	  if (!pin) { statusEl.textContent = "Enter a PIN first."; return; }
+	  await loadData();
+	};
+
+	refreshBtn.onclick = loadData;
+
+	exportBtn.onclick = () => {
+	  if (!pin) return;
+	  // force download with auth header via fetch -> blob
+	  (async () => {
+		try{
+		  const res = await fetch("/api/admin/export.csv", { headers: { "x-admin-pin": pin }});
+		  const blob = await res.blob();
+		  const url = URL.createObjectURL(blob);
+		  const a = document.createElement("a");
+		  a.href = url;
+		  a.download = "submissions.csv";
+		  document.body.appendChild(a);
+		  a.click();
+		  a.remove();
+		  URL.revokeObjectURL(url);
+		} catch {
+		  showToast("❌ Export failed");
+		}
+	  })();
+	};
+
+	clearBtn.onclick = async () => {
+	  if (!pin) { statusEl.textContent = "Unlock first."; return; }
+	  const ok = confirm("This will permanently delete ALL rows. Continue?");
+	  if (!ok) return;
+
+	  statusEl.textContent = "Clearing database...";
+	  clearBtn.disabled = true;
+	  refreshBtn.disabled = true;
+
+	  try {
+		const res = await fetch("/api/admin/clear", { method: "POST", headers: { "x-admin-pin": pin } });
+		const json = await res.json();
+		if (!json.ok) throw new Error(json.error || "Failed");
+
+		statusEl.textContent = "✅ Database cleared.";
+		allRows = [];
+		selectedId = null;
+		renderTable(allRows);
+		renderDetails(null);
+	  } catch (e) {
+		statusEl.textContent = "❌ Clear failed: " + (e?.message || String(e));
+	  } finally {
+		clearBtn.disabled = false;
+		refreshBtn.disabled = false;
+	  }
+	};
+
+	searchInput.addEventListener("input", () => renderTable(allRows));
+	limitSelect.addEventListener("change", () => loadData());
+
+	// sortable headers
+	document.querySelectorAll("thead th[data-k]").forEach(th => {
+	  th.addEventListener("click", () => {
+		const k = th.getAttribute("data-k");
+		if (sortKey === k) sortDir = (sortDir === "asc" ? "desc" : "asc");
+		else { sortKey = k; sortDir = "desc"; }
+		renderTable(allRows);
+	  });
+	});
+
+	pinInput.addEventListener("keydown", (e) => { if (e.key === "Enter") unlockBtn.click(); });
+
+	setLockedUI(true);
+  </script>
+</body>
+</html>
